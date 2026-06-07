@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global Climate Records 2024</title>
+<style>
+  :root {
+    --bg-primary: #0d1117;
+    --bg-secondary: #161b22;
+    --bg-card: #1c2230;
+    --bg-hover: #21293a;
+    --border: #30363d;
+    --accent-blue: #58a6ff;
+    --accent-cyan: #39d0d8;
+    --accent-purple: #bc8cff;
+    --accent-orange: #f78166;
+    --accent-green: #3fb950;
+    --accent-yellow: #e3b341;
+    --text-primary: #e6edf3;
+    --text-secondary: #8b949e;
+    --text-muted: #484f58;
+    --shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Animated background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-image:
+      linear-gradient(rgba(88,166,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(88,166,255,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: gridMove 20s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @keyframes gridMove {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(60px); }
+  }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 40px 24px;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    margin-bottom: 48px;
+    animation: fadeDown 0.7s ease both;
+  }
+
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(88,166,255,0.1);
+    border: 1px solid rgba(88,166,255,0.3);
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 12px;
+    color: var(--accent-blue);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .header-badge::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--accent-blue);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.8); }
+  }
+
+  h1 {
+    font-size: clamp(28px, 5vw, 48px);
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan), var(--accent-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+
+  .subtitle {
+    color: var(--text-secondary);
+    font-size: 15px;
+  }
+
+  /* Stats bar */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+    animation: fadeUp 0.7s 0.2s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .stat-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 20px rgba(88,166,255,0.15);
+  }
+
+  .stat-value {
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  /* Filters */
+  .filters {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+    animation: fadeUp 0.7s 0.3s ease both;
+  }
+
+  .filter-btn {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    padding: 8px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.2s;
+  }
+
+  .filter-btn:hover, .filter-btn.active {
+    background: rgba(88,166,255,0.12);
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+  }
+
+  .search-wrap {
+    margin-left: auto;
+    position: relative;
+  }
+
+  .search-wrap input {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    color: var(--text-primary);
+    padding: 8px 16px 8px 36px;
+    border-radius: 8px;
+    font-size: 13px;
+    width: 220px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .search-wrap input:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px rgba(88,166,255,0.12);
+  }
+
+  .search-wrap::before {
+    content: '⌕';
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 16px;
+    pointer-events: none;
+  }
+
+  /* Table */
+  .table-wrap {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    animation: fadeUp 0.7s 0.4s ease both;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  thead tr {
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border);
+  }
+
+  th {
+    padding: 14px 16px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.2s;
+  }
+
+  th:hover { color: var(--accent-blue); }
+
+  th .sort-icon {
+    display: inline-block;
+    margin-left: 4px;
+    opacity: 0.4;
+    font-size: 10px;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid rgba(48,54,61,0.6);
+    transition: background 0.15s;
+    animation: rowIn 0.4s ease both;
+  }
+
+  @keyframes rowIn {
+    from { opacity: 0; transform: translateX(-10px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  tbody tr:hover { background: var(--bg-hover); }
+  tbody tr:last-child { border-bottom: none; }
+
+  td {
+    padding: 13px 16px;
+    vertical-align: middle;
+    white-space: nowrap;
+  }
+
+  /* City cell */
+  .city-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .city-flag {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+  }
+
+  .city-name { font-weight: 600; color: var(--text-primary); }
+  .city-country { font-size: 11px; color: var(--text-muted); }
+
+  /* Temperature badge */
+  .temp-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 13px;
+  }
+
+  .temp-hot    { background: rgba(247,129,102,0.15); color: var(--accent-orange); border: 1px solid rgba(247,129,102,0.3); }
+  .temp-warm   { background: rgba(227,179,65,0.15);  color: var(--accent-yellow); border: 1px solid rgba(227,179,65,0.3); }
+  .temp-mild   { background: rgba(63,185,80,0.15);   color: var(--accent-green);  border: 1px solid rgba(63,185,80,0.3); }
+  .temp-cold   { background: rgba(88,166,255,0.15);  color: var(--accent-blue);   border: 1px solid rgba(88,166,255,0.3); }
+  .temp-freeze { background: rgba(188,140,255,0.15); color: var(--accent-purple); border: 1px solid rgba(188,140,255,0.3); }
+
+  /* Condition badge */
+  .cond-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border);
+  }
+
+  /* Humidity bar */
+  .humidity-wrap { display: flex; align-items: center; gap: 8px; }
+  .humidity-bar {
+    width: 60px; height: 6px;
+    background: var(--bg-card);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .humidity-fill {
+    height: 100%;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent-cyan), var(--accent-blue));
+  }
+
+  /* UV badge */
+  .uv-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .uv-low    { background: rgba(63,185,80,0.15);   color: var(--accent-green); }
+  .uv-mod    { background: rgba(227,179,65,0.15);  color: var(--accent-yellow); }
+  .uv-high   { background: rgba(247,129,102,0.15); color: var(--accent-orange); }
+  .uv-xhigh  { background: rgba(247,80,80,0.18);   color: #f85149; }
+
+  /* Precipitation */
+  .precip { color: var(--accent-cyan); font-weight: 600; }
+  .precip-zero { color: var(--text-muted); }
+
+  /* Season pill */
+  .season-pill {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .s-summer  { background: rgba(247,129,102,0.12); color: var(--accent-orange); }
+  .s-winter  { background: rgba(88,166,255,0.12);  color: var(--accent-blue); }
+  .s-spring  { background: rgba(63,185,80,0.12);   color: var(--accent-green); }
+  .s-autumn  { background: rgba(227,179,65,0.12);  color: var(--accent-yellow); }
+  .s-monsoon { background: rgba(57,208,216,0.12);  color: var(--accent-cyan); }
+  .s-dry     { background: rgba(188,140,255,0.12); color: var(--accent-purple); }
+
+  /* ID cell */
+  .id-cell {
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Footer */
+  footer {
+    text-align: center;
+    margin-top: 40px;
+    color: var(--text-muted);
+    font-size: 12px;
+    animation: fadeUp 0.7s 0.6s ease both;
+  }
+
+  .hidden { display: none !important; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg-primary); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="header-badge">Live Dataset</div>
+    <h1>Global Climate Records 2024</h1>
+    <p class="subtitle">25 meteorological observations across 25 world cities — temperature, precipitation &amp; atmospheric data</p>
+  </header>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent-blue)">25</div>
+      <div class="stat-label">Cities Monitored</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent-orange)">44.6°C</div>
+      <div class="stat-label">Highest Temp Max</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent-purple)">−15.3°C</div>
+      <div class="stat-label">Lowest Temp Min</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent-cyan)">87.4 mm</div>
+      <div class="stat-label">Peak Precipitation</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent-green)">38 km/h</div>
+      <div class="stat-label">Peak Wind Speed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:var(--accent-yellow)">91%</div>
+      <div class="stat-label">Max Humidity</div>
+    </div>
+  </div>
+
+  <div class="filters">
+    <button class="filter-btn active" onclick="filterSeason('all', this)">All Seasons</button>
+    <button class="filter-btn" onclick="filterSeason('Summer', this)">Summer</button>
+    <button class="filter-btn" onclick="filterSeason('Winter', this)">Winter</button>
+    <button class="filter-btn" onclick="filterSeason('Spring', this)">Spring</button>
+    <button class="filter-btn" onclick="filterSeason('Monsoon', this)">Monsoon</button>
+    <div class="search-wrap">
+      <input type="text" id="searchInput" placeholder="Search city or condition..." oninput="searchTable()">
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table id="climateTable">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>City</th>
+          <th onclick="sortTable(2)">Season <span class="sort-icon">⇅</span></th>
+          <th onclick="sortTable(3)">Date <span class="sort-icon">⇅</span></th>
+          <th onclick="sortTable(4)">Temp Avg <span class="sort-icon">⇅</span></th>
+          <th>Temp Range</th>
+          <th onclick="sortTable(6)">Humidity <span class="sort-icon">⇅</span></th>
+          <th onclick="sortTable(7)">Precip. <span class="sort-icon">⇅</span></th>
+          <th>Wind</th>
+          <th onclick="sortTable(9)">UV <span class="sort-icon">⇅</span></th>
+          <th>Condition</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+      </tbody>
+    </table>
+  </div>
+
+  <footer>
+    <p>Climate Records Dataset &mdash; 2024 Global Monitoring Sample &mdash; 25 Records across 4 seasonal observations</p>
+  </footer>
+</div>
+
+<script>
+const records = [
+  {id:1, city:"Buenos Aires", country:"Argentina", flag:"🇦🇷", date:"2024-01-15", season:"Summer", tmin:22.4, tmax:34.7, tavg:28.6, hum:68, precip:0.0, wind:14, wdir:"SE", uv:9, cloud:15, cond:"Sunny"},
+  {id:2, city:"Oslo", country:"Norway", flag:"🇳🇴", date:"2024-01-15", season:"Winter", tmin:-8.2, tmax:-2.1, tavg:-5.1, hum:78, precip:12.4, wind:22, wdir:"NW", uv:1, cloud:92, cond:"Heavy Snow"},
+  {id:3, city:"Nairobi", country:"Kenya", flag:"🇰🇪", date:"2024-01-15", season:"Dry Season", tmin:14.1, tmax:26.8, tavg:20.5, hum:61, precip:0.0, wind:9, wdir:"NE", uv:7, cloud:30, cond:"Partly Cloudy"},
+  {id:4, city:"Tokyo", country:"Japan", flag:"🇯🇵", date:"2024-01-15", season:"Winter", tmin:2.3, tmax:9.7, tavg:6.0, hum:55, precip:0.0, wind:18, wdir:"N", uv:3, cloud:20, cond:"Clear"},
+  {id:5, city:"Sydney", country:"Australia", flag:"🇦🇺", date:"2024-01-15", season:"Summer", tmin:19.8, tmax:31.4, tavg:25.6, hum:72, precip:3.2, wind:17, wdir:"E", uv:10, cloud:40, cond:"Mostly Sunny"},
+  {id:6, city:"Cairo", country:"Egypt", flag:"🇪🇬", date:"2024-01-15", season:"Winter", tmin:9.5, tmax:20.3, tavg:14.9, hum:44, precip:0.0, wind:11, wdir:"NW", uv:5, cloud:10, cond:"Sunny"},
+  {id:7, city:"Vancouver", country:"Canada", flag:"🇨🇦", date:"2024-01-15", season:"Winter", tmin:2.1, tmax:7.4, tavg:4.8, hum:89, precip:18.6, wind:26, wdir:"SW", uv:1, cloud:97, cond:"Rainy"},
+  {id:8, city:"Mumbai", country:"India", flag:"🇮🇳", date:"2024-01-15", season:"Dry Season", tmin:18.7, tmax:30.5, tavg:24.6, hum:52, precip:0.0, wind:12, wdir:"N", uv:8, cloud:5, cond:"Sunny"},
+  {id:9, city:"Moscow", country:"Russia", flag:"🇷🇺", date:"2024-01-15", season:"Winter", tmin:-15.3, tmax:-6.8, tavg:-11.0, hum:83, precip:7.8, wind:14, wdir:"E", uv:1, cloud:85, cond:"Overcast Snow"},
+  {id:10, city:"Cape Town", country:"South Africa", flag:"🇿🇦", date:"2024-01-15", season:"Summer", tmin:17.6, tmax:29.1, tavg:23.4, hum:59, precip:0.0, wind:31, wdir:"S", uv:9, cloud:20, cond:"Sunny Windy"},
+  {id:11, city:"Reykjavik", country:"Iceland", flag:"🇮🇸", date:"2024-04-10", season:"Spring", tmin:-1.2, tmax:5.3, tavg:2.1, hum:74, precip:6.2, wind:38, wdir:"SW", uv:3, cloud:80, cond:"Cloudy Windy"},
+  {id:12, city:"Singapore", country:"Singapore", flag:"🇸🇬", date:"2024-04-10", season:"Monsoon", tmin:25.3, tmax:32.1, tavg:28.7, hum:88, precip:41.2, wind:15, wdir:"S", uv:7, cloud:75, cond:"Thunderstorm"},
+  {id:13, city:"Denver", country:"USA", flag:"🇺🇸", date:"2024-04-10", season:"Spring", tmin:4.5, tmax:18.9, tavg:11.7, hum:38, precip:0.0, wind:29, wdir:"W", uv:7, cloud:35, cond:"Sunny"},
+  {id:14, city:"Lagos", country:"Nigeria", flag:"🇳🇬", date:"2024-04-10", season:"Pre-Monsoon", tmin:26.4, tmax:35.8, tavg:31.1, hum:79, precip:14.7, wind:10, wdir:"SW", uv:9, cloud:60, cond:"Partly Cloudy"},
+  {id:15, city:"Berlin", country:"Germany", flag:"🇩🇪", date:"2024-04-10", season:"Spring", tmin:6.8, tmax:16.2, tavg:11.5, hum:62, precip:2.1, wind:19, wdir:"W", uv:5, cloud:55, cond:"Cloudy"},
+  {id:16, city:"Lima", country:"Peru", flag:"🇵🇪", date:"2024-04-10", season:"Autumn", tmin:16.9, tmax:23.7, tavg:20.3, hum:83, precip:0.4, wind:11, wdir:"S", uv:4, cloud:70, cond:"Foggy"},
+  {id:17, city:"Seoul", country:"South Korea", flag:"🇰🇷", date:"2024-04-10", season:"Spring", tmin:8.4, tmax:17.6, tavg:13.0, hum:58, precip:9.3, wind:22, wdir:"NW", uv:6, cloud:45, cond:"Light Rain"},
+  {id:18, city:"Rio de Janeiro", country:"Brazil", flag:"🇧🇷", date:"2024-07-20", season:"Winter", tmin:16.2, tmax:25.8, tavg:21.0, hum:71, precip:1.8, wind:18, wdir:"SE", uv:5, cloud:35, cond:"Partly Cloudy"},
+  {id:19, city:"Helsinki", country:"Finland", flag:"🇫🇮", date:"2024-07-20", season:"Summer", tmin:14.5, tmax:23.9, tavg:19.2, hum:66, precip:4.5, wind:13, wdir:"SW", uv:6, cloud:50, cond:"Partly Cloudy"},
+  {id:20, city:"Dubai", country:"UAE", flag:"🇦🇪", date:"2024-07-20", season:"Summer", tmin:33.2, tmax:44.6, tavg:38.9, hum:55, precip:0.0, wind:17, wdir:"NW", uv:11, cloud:0, cond:"Sunny Extreme"},
+  {id:21, city:"Mexico City", country:"Mexico", flag:"🇲🇽", date:"2024-07-20", season:"Monsoon", tmin:13.1, tmax:21.4, tavg:17.3, hum:78, precip:28.9, wind:14, wdir:"SE", uv:7, cloud:85, cond:"Afternoon Storm"},
+  {id:22, city:"Lisbon", country:"Portugal", flag:"🇵🇹", date:"2024-07-20", season:"Summer", tmin:18.7, tmax:31.5, tavg:25.1, hum:45, precip:0.0, wind:21, wdir:"NW", uv:9, cloud:5, cond:"Sunny"},
+  {id:23, city:"Bangkok", country:"Thailand", flag:"🇹🇭", date:"2024-07-20", season:"Monsoon", tmin:27.3, tmax:34.2, tavg:30.8, hum:91, precip:87.4, wind:12, wdir:"SW", uv:6, cloud:90, cond:"Heavy Rain"},
+  {id:24, city:"Toronto", country:"Canada", flag:"🇨🇦", date:"2024-10-05", season:"Autumn", tmin:7.3, tmax:16.8, tavg:12.1, hum:65, precip:0.0, wind:20, wdir:"W", uv:4, cloud:40, cond:"Clear"},
+  {id:25, city:"Auckland", country:"New Zealand", flag:"🇳🇿", date:"2024-10-05", season:"Spring", tmin:11.4, tmax:18.7, tavg:15.1, hum:72, precip:8.3, wind:24, wdir:"SW", uv:5, cloud:60, cond:"Showers"},
+];
+
+const condIcons = {
+  "Sunny":"☀️","Heavy Snow":"❄️","Partly Cloudy":"⛅","Clear":"🌙","Mostly Sunny":"🌤️",
+  "Rainy":"🌧️","Overcast Snow":"🌨️","Sunny Windy":"💨","Cloudy Windy":"🌬️",
+  "Thunderstorm":"⛈️","Cloudy":"☁️","Foggy":"🌫️","Light Rain":"🌦️","Sunny Extreme":"🔆",
+  "Afternoon Storm":"⛈️","Heavy Rain":"🌧️","Showers":"🌂","Dry Season":"☀️"
+};
+
+function tempClass(t) {
+  if (t >= 35) return 'temp-hot';
+  if (t >= 22) return 'temp-warm';
+  if (t >= 10) return 'temp-mild';
+  if (t >= 0)  return 'temp-cold';
+  return 'temp-freeze';
+}
+
+function uvClass(u) {
+  if (u >= 9) return 'uv-xhigh';
+  if (u >= 6) return 'uv-high';
+  if (u >= 3) return 'uv-mod';
+  return 'uv-low';
+}
+
+function seasonClass(s) {
+  if (s.includes('Summer')) return 's-summer';
+  if (s.includes('Winter')) return 's-winter';
+  if (s.includes('Spring')) return 's-spring';
+  if (s.includes('Autumn')) return 's-autumn';
+  if (s.includes('Monsoon') || s.includes('Monsoon')) return 's-monsoon';
+  return 's-dry';
+}
+
+function buildRow(r, delay) {
+  const tc = tempClass(r.tavg);
+  const icon = condIcons[r.cond] || '🌡️';
+  return `<tr data-season="${r.season}" data-search="${r.city.toLowerCase()} ${r.country.toLowerCase()} ${r.cond.toLowerCase()}" style="animation-delay:${delay}ms">
+    <td class="id-cell">${String(r.id).padStart(2,'0')}</td>
+    <td>
+      <div class="city-cell">
+        <div class="city-flag">${r.flag}</div>
+        <div>
+          <div class="city-name">${r.city}</div>
+          <div class="city-country">${r.country}</div>
+        </div>
+      </div>
+    </td>
+    <td><span class="season-pill ${seasonClass(r.season)}">${r.season}</span></td>
+    <td style="color:var(--text-secondary);font-size:12px">${r.date}</td>
+    <td><span class="temp-badge ${tc}">${r.tavg > 0 ? '+' : ''}${r.tavg}°C</span></td>
+    <td style="color:var(--text-secondary);font-size:12px">${r.tmin > 0 ? '+' : ''}${r.tmin} / ${r.tmax > 0 ? '+' : ''}${r.tmax}°C</td>
+    <td>
+      <div class="humidity-wrap">
+        <div class="humidity-bar"><div class="humidity-fill" style="width:${r.hum}%"></div></div>
+        <span>${r.hum}%</span>
+      </div>
+    </td>
+    <td class="${r.precip > 0 ? 'precip' : 'precip-zero'}">${r.precip > 0 ? r.precip + ' mm' : '—'}</td>
+    <td style="color:var(--text-secondary)">${r.wind} km/h <span style="font-size:11px;color:var(--text-muted)">${r.wdir}</span></td>
+    <td><span class="uv-badge ${uvClass(r.uv)}">${r.uv}</span></td>
+    <td><span class="cond-badge">${icon} ${r.cond}</span></td>
+  </tr>`;
+}
+
+function render(data) {
+  document.getElementById('tableBody').innerHTML = data
+    .map((r, i) => buildRow(r, i * 30))
+    .join('');
+}
+
+render(records);
+
+let currentSeason = 'all';
+let currentSearch = '';
+
+function applyFilters() {
+  const rows = document.querySelectorAll('#tableBody tr');
+  rows.forEach(row => {
+    const season = row.dataset.season;
+    const search = row.dataset.search;
+    const matchSeason = currentSeason === 'all' || season.includes(currentSeason);
+    const matchSearch = search.includes(currentSearch);
+    row.classList.toggle('hidden', !(matchSeason && matchSearch));
+  });
+}
+
+function filterSeason(s, btn) {
+  currentSeason = s;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyFilters();
+}
+
+function searchTable() {
+  currentSearch = document.getElementById('searchInput').value.toLowerCase();
+  applyFilters();
+}
+
+let sortDir = {};
+function sortTable(col) {
+  const keys = ['id','city','season','date','tavg',null,'hum','precip',null,'uv'];
+  const key = keys[col];
+  if (!key) return;
+  sortDir[key] = !sortDir[key];
+  const sorted = [...records].sort((a, b) => {
+    const av = a[key], bv = b[key];
+    return sortDir[key]
+      ? (av > bv ? 1 : -1)
+      : (av < bv ? 1 : -1);
+  });
+  render(sorted);
+  applyFilters();
+}
+</script>
+</body>
+</html>
